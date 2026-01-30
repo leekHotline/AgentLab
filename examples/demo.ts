@@ -1,4 +1,4 @@
-import { Orchestrator, TaskType } from '@agentlab/orchestrator';
+import { Orchestrator, TaskType, TaskStatus } from '@agentlab/orchestrator';
 import { TypeScriptAgent } from '@agentlab/typescript-agent';
 
 /**
@@ -73,24 +73,32 @@ async function runDemo() {
   // 4. Listen to events
   console.log('\n4. Processing Tasks...\n');
   
-  orchestrator.on('task-assigned', ({ task, agent }) => {
+  orchestrator.on('task-assigned', ({ task, agent }: any) => {
     console.log(`   → Task ${task.id} assigned to ${agent.agentId}`);
   });
 
-  orchestrator.on('task-completed', ({ task, result }) => {
+  orchestrator.on('task-completed', ({ task, result }: any) => {
     console.log(`   ✓ Task ${task.id} completed: ${result.success ? 'SUCCESS' : 'FAILED'}`);
   });
 
   // 5. Simulate task processing
   console.log('   Processing...\n');
   
-  // Get assigned tasks and process them
-  const allTasks = orchestrator.getAllTasks();
-  for (const task of allTasks) {
-    if (task.assignedTo === 'ts-agent-1') {
-      const result = await tsAgent.processTask(task);
-      orchestrator.completeTask(result);
+  // Process all tasks as they get assigned
+  let processedCount = 0;
+  const totalTasks = 3;
+  
+  while (processedCount < totalTasks) {
+    const allTasks = orchestrator.getAllTasks();
+    for (const task of allTasks) {
+      if (task.assignedTo === 'ts-agent-1' && task.status === 'assigned') {
+        task.status = TaskStatus.PROCESSING;
+        const result = await tsAgent.processTask(task);
+        orchestrator.completeTask(result);
+        processedCount++;
+      }
     }
+    await new Promise(resolve => setTimeout(resolve, 100));
   }
 
   // 6. Display statistics
@@ -104,7 +112,8 @@ async function runDemo() {
 
   // 7. Display final results
   console.log('\n6. Task Results:');
-  allTasks.forEach(task => {
+  const finalTasks = orchestrator.getAllTasks();
+  finalTasks.forEach((task: any) => {
     if (task.status === 'completed') {
       console.log(`\n   Task ${task.id}:`);
       console.log(`   Status: ${task.status}`);

@@ -11,10 +11,12 @@ export class TaskQueue {
   /**
    * Add a task to the queue
    */
-  enqueue(task: Task): void {
+  enqueue(task: Task, silent: boolean = false): void {
     this.queue.push(task);
     this.queue.sort((a, b) => (b.priority || 0) - (a.priority || 0));
-    this.events.emit('task-added', task);
+    if (!silent) {
+      this.events.emit('task-added', task);
+    }
   }
 
   /**
@@ -100,8 +102,8 @@ export class TaskScheduler {
         this.events.emit('task-assigned', { task, agent });
         console.log(`Task ${task.id} assigned to ${agent.agentId}`);
       } else {
-        // No available agent, put task back in queue
-        this.taskQueue.enqueue(task);
+        // No available agent, put task back in queue without triggering event
+        this.taskQueue.enqueue(task, true);
         break;
       }
     }
