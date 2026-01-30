@@ -1,0 +1,19 @@
+{
+  "name": "@agentlab/examples",
+  "version": "1.0.0",
+  "description": "Example demonstrations of multi-agent collaboration",
+  "main": "dist/demo.js",
+  "scripts": {
+    "build": "tsc",
+    "demo": "node dist/demo.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@agentlab/orchestrator": "workspace:*",
+    "@agentlab/typescript-agent": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  }
+}
