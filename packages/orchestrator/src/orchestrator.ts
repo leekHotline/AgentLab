@@ -2,6 +2,13 @@ import EventEmitter from 'eventemitter3';
 import { Task, TaskStatus, TaskType, TaskResult, AgentCapability, AgentStatus } from './types';
 import { TaskQueue, TaskScheduler } from './scheduler';
 
+export type OrchestratorEventMap = {
+  'task-submitted': (task: Task) => void;
+  'task-assigned': (data: { task: Task; agent: AgentCapability }) => void;
+  'task-completed': (data: { task: Task; result: TaskResult }) => void;
+  'agent-registered': (agent: AgentCapability) => void;
+};
+
 /**
  * Orchestrator - Main coordinator for multi-agent system
  */
@@ -97,7 +104,7 @@ export class Orchestrator {
   /**
    * Listen to orchestrator events
    */
-  on(event: string, handler: Function): void {
+  on<K extends keyof OrchestratorEventMap>(event: K, handler: OrchestratorEventMap[K]): void {
     this.events.on(event, handler as any);
   }
 

@@ -1,4 +1,4 @@
-import { Orchestrator, TaskType, TaskStatus } from '@agentlab/orchestrator';
+import { Orchestrator, TaskType, TaskStatus, Task, TaskResult, AgentCapability } from '@agentlab/orchestrator';
 import { TypeScriptAgent } from '@agentlab/typescript-agent';
 
 /**
@@ -73,11 +73,11 @@ async function runDemo() {
   // 4. Listen to events
   console.log('\n4. Processing Tasks...\n');
   
-  orchestrator.on('task-assigned', ({ task, agent }: any) => {
+  orchestrator.on('task-assigned', ({ task, agent }: { task: Task; agent: AgentCapability }) => {
     console.log(`   → Task ${task.id} assigned to ${agent.agentId}`);
   });
 
-  orchestrator.on('task-completed', ({ task, result }: any) => {
+  orchestrator.on('task-completed', ({ task, result }: { task: Task; result: TaskResult }) => {
     console.log(`   ✓ Task ${task.id} completed: ${result.success ? 'SUCCESS' : 'FAILED'}`);
   });
 
@@ -91,8 +91,9 @@ async function runDemo() {
   while (processedCount < totalTasks) {
     const allTasks = orchestrator.getAllTasks();
     for (const task of allTasks) {
-      if (task.assignedTo === 'ts-agent-1' && task.status === 'assigned') {
-        task.status = TaskStatus.PROCESSING;
+      if (task.assignedTo === 'ts-agent-1' && task.status === TaskStatus.ASSIGNED) {
+        // Note: In production, don't mutate task status directly
+        // This is for demo purposes only - the agent should handle this
         const result = await tsAgent.processTask(task);
         orchestrator.completeTask(result);
         processedCount++;
@@ -113,8 +114,8 @@ async function runDemo() {
   // 7. Display final results
   console.log('\n6. Task Results:');
   const finalTasks = orchestrator.getAllTasks();
-  finalTasks.forEach((task: any) => {
-    if (task.status === 'completed') {
+  finalTasks.forEach((task: Task) => {
+    if (task.status === TaskStatus.COMPLETED) {
       console.log(`\n   Task ${task.id}:`);
       console.log(`   Status: ${task.status}`);
       console.log(`   Result:`, JSON.stringify(task.result, null, 4).split('\n').join('\n   '));

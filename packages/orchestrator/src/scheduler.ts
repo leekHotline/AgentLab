@@ -1,6 +1,9 @@
 import EventEmitter from 'eventemitter3';
 import { Task, TaskStatus, AgentCapability, AgentStatus, TaskType } from './types';
 
+export type TaskEventHandler = (task: Task) => void;
+export type TaskAssignedEventHandler = (data: { task: Task; agent: AgentCapability }) => void;
+
 /**
  * Task Queue manages pending tasks
  */
@@ -43,7 +46,7 @@ export class TaskQueue {
   /**
    * Listen to queue events
    */
-  on(event: string, handler: Function): void {
+  on(event: 'task-added', handler: TaskEventHandler): void {
     this.events.on(event, handler as any);
   }
 }
@@ -130,7 +133,7 @@ export class TaskScheduler {
   /**
    * Listen to scheduler events
    */
-  on(event: string, handler: Function): void {
+  on(event: 'task-assigned', handler: TaskAssignedEventHandler): void {
     this.events.on(event, handler as any);
   }
 
