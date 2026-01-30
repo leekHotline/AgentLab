@@ -1,0 +1,25 @@
+{
+  "name": "@agentlab/typescript-agent",
+  "version": "1.0.0",
+  "description": "TypeScript agent worker for API and network operations",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "start": "node dist/index.js"
+  },
+  "keywords": [
+    "agent",
+    "typescript",
+    "worker"
+  ],
+  "dependencies": {
+    "@agentlab/orchestrator": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  }
+}

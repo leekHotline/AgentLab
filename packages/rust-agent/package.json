@@ -1,0 +1,15 @@
+{
+  "name": "@agentlab/rust-agent",
+  "version": "1.0.0",
+  "description": "Rust agent worker for high-performance computing",
+  "scripts": {
+    "build": "cd packages/rust-agent && cargo build --release",
+    "dev": "cd packages/rust-agent && cargo run",
+    "clean": "cd packages/rust-agent && cargo clean"
+  },
+  "keywords": [
+    "agent",
+    "rust",
+    "high-performance"
+  ]
+}
